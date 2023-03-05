@@ -9,6 +9,9 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
+  // Dimensions,
+  // ScrollView,
+  ImageBackground,
 } from "react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -18,7 +21,10 @@ const initialState = {
   email: "",
   password: "",
 };
-export default function LoginScreen() {
+// const windowDimensions = Dimensions.get("window");
+// const screenDimensions = Dimensions.get("screen");
+
+export default function LoginScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [showPass, setShowPass] = useState(false);
@@ -27,10 +33,31 @@ export default function LoginScreen() {
     login: false,
     password: false,
   });
+
+  // const [dimensions, setDimensions] = useState({
+  //   window: windowDimensions,
+  //   screen: screenDimensions,
+  // });
+
+  const keyboardHide = () => {
+    Keyboard.dismiss();
+    console.log(state);
+    setState(initialState);
+  };
+  // useEffect(() => {
+  //   const subscription = Dimensions.addEventListener(
+  //     "change",
+  //     ({ window, screen }) => {
+  //       setDimensions({ window, screen });
+  //     }
+  //   );
+  //   return () => subscription?.remove();
+  // });
   const [fontsLoaded] = useFonts({
     "Roboto-400": require("../assets/fonts/Roboto-Regular.ttf"),
     "Roboto-500": require("../assets/fonts/Roboto-Medium.ttf"),
   });
+
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -40,107 +67,133 @@ export default function LoginScreen() {
   if (!fontsLoaded) {
     return null;
   }
-
-  const keyboardHide = () => {
-    Keyboard.dismiss();
-    console.log(state);
-    setState(initialState);
-  };
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <KeyboardAvoidingView>
-        <View
-          style={{ ...styles.form, paddingBottom: isShowKeyboard ? 32 : 78 }}
-          onLayout={onLayoutRootView}
+    <View style={styles.container}>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <ImageBackground
+          style={styles.image}
+          source={require("../assets/bg-3x.png")}
         >
-          <View style={styles.photoWrap}></View>
-          <Text style={styles.formTitle}>Ввійти</Text>
-          <View style={{ paddingBottom: isShowKeyboard ? 0 : 43 }}>
-            <TextInput
+          {/* {dimensions.window.height < 400 ? (
+            <ScrollView> */}
+          <KeyboardAvoidingView>
+            <View
               style={{
-                ...styles.input,
-                borderColor: active.email ? "#FF6C00" : "#E8E8E8",
+                ...styles.form,
+                paddingBottom: isShowKeyboard ? 32 : 78,
               }}
-              value={state.email}
-              placeholder={"Адреса електронної пошти"}
-              placeholderTextColor={"#BDBDBD"}
-              onChangeText={(value) =>
-                setState((prevState) => ({ ...prevState, email: value }))
-              }
-              onFocus={() => {
-                setIsShowKeyboard(true);
-                setIsActive((prevState) => ({
-                  ...prevState,
-                  email: true,
-                }));
-              }}
-              onBlur={() => {
-                setIsShowKeyboard(false);
-                setIsActive((prevState) => ({
-                  ...prevState,
-                  email: false,
-                }));
-              }}
-            />
-            <View style={styles.inputWrap}>
-              <TextInput
-                style={{
-                  ...styles.input,
-                  borderColor: active.password ? "#FF6C00" : "#E8E8E8",
-                  marginBottom: 0,
-                }}
-                value={state.password}
-                placeholder={"Пароль"}
-                placeholderTextColor={"#BDBDBD"}
-                onFocus={() => {
-                  setIsShowKeyboard(true);
-                  setIsActive((prevState) => ({
-                    ...prevState,
-                    password: true,
-                  }));
-                }}
-                onBlur={() => {
-                  setIsShowKeyboard(false);
-                  setIsActive((prevState) => ({
-                    ...prevState,
-                    password: false,
-                  }));
-                }}
-                onChangeText={(value) =>
-                  setState((prevState) => ({ ...prevState, password: value }))
-                }
-                secureTextEntry={showPass}
-              />
-              <Text
-                style={styles.show}
-                onPress={() => {
-                  setShowPass(!showPass);
-                }}
-              >
-                Показати
-              </Text>
+              onLayout={onLayoutRootView}
+            >
+              <View style={styles.photoWrap}></View>
+              <Text style={styles.formTitle}>Ввійти</Text>
+              <View style={{ paddingBottom: isShowKeyboard ? 0 : 43 }}>
+                <TextInput
+                  style={{
+                    ...styles.input,
+                    borderColor: active.email ? "#FF6C00" : "#E8E8E8",
+                  }}
+                  value={state.email}
+                  placeholder={"Адреса електронної пошти"}
+                  placeholderTextColor={"#BDBDBD"}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({
+                      ...prevState,
+                      email: value,
+                    }))
+                  }
+                  onFocus={() => {
+                    setIsShowKeyboard(true);
+                    setIsActive((prevState) => ({
+                      ...prevState,
+                      email: true,
+                    }));
+                  }}
+                  onBlur={() => {
+                    setIsShowKeyboard(false);
+                    setIsActive((prevState) => ({
+                      ...prevState,
+                      email: false,
+                    }));
+                  }}
+                />
+                <View style={styles.inputWrap}>
+                  <TextInput
+                    style={{
+                      ...styles.input,
+                      borderColor: active.password ? "#FF6C00" : "#E8E8E8",
+                      marginBottom: 0,
+                    }}
+                    value={state.password}
+                    placeholder={"Пароль"}
+                    placeholderTextColor={"#BDBDBD"}
+                    onFocus={() => {
+                      setIsShowKeyboard(true);
+                      setIsActive((prevState) => ({
+                        ...prevState,
+                        password: true,
+                      }));
+                    }}
+                    onBlur={() => {
+                      setIsShowKeyboard(false);
+                      setIsActive((prevState) => ({
+                        ...prevState,
+                        password: false,
+                      }));
+                    }}
+                    onChangeText={(value) =>
+                      setState((prevState) => ({
+                        ...prevState,
+                        password: value,
+                      }))
+                    }
+                    secureTextEntry={showPass}
+                  />
+                  <Text
+                    style={styles.show}
+                    onPress={() => {
+                      setShowPass(!showPass);
+                    }}
+                  >
+                    Показати
+                  </Text>
+                </View>
+              </View>
+              <View style={{ display: `${isShowKeyboard ? "none" : "flex"}` }}>
+                <View style={{ paddingBottom: 16 }}>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={keyboardHide}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.textButton}>Ввійти</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.textLogWrap}>
+                  <Text
+                    style={styles.textLog}
+                    onPress={() => navigation.navigate("Registration")}
+                  >
+                    Немає акаунта? Зареєструватися
+                  </Text>
+                </View>
+              </View>
             </View>
-          </View>
-          <View style={{ display: `${isShowKeyboard ? "none" : "flex"}` }}>
-            <View style={{ paddingBottom: 16 }}>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={keyboardHide}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.textButton}>Ввійти</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.textLogWrap}>
-              <Text style={styles.textLog}>Немає акаунта? Зареєструватися</Text>
-            </View>
-          </View>
-        </View>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+          </KeyboardAvoidingView>
+        </ImageBackground>
+      </TouchableWithoutFeedback>
+    </View>
   );
 }
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  image: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "flex-end",
+  },
   form: {
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 25,

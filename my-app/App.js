@@ -1,63 +1,25 @@
-import {
-  ImageBackground,
-  Keyboard,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-  Dimensions,
-  ScrollView,
-} from "react-native";
-import { useState, useEffect } from "react";
 import RegisrationScreen from "./Screens/RegistrationScreen";
 import LoginScreen from "./Screens/LoginScreen";
-const windowDimensions = Dimensions.get("window");
-const screenDimensions = Dimensions.get("screen");
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
 export default function App() {
-  const [dimensions, setDimensions] = useState({
-    window: windowDimensions,
-    screen: screenDimensions,
-  });
-  useEffect(() => {
-    const subscription = Dimensions.addEventListener(
-      "change",
-      ({ window, screen }) => {
-        setDimensions({ window, screen });
-      }
-    );
-    return () => subscription?.remove();
-  });
+  const MainStack = createStackNavigator();
 
   return (
-    <View style={styles.container}>
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <ImageBackground
-          style={styles.image}
-          source={require("../my-app/assets/bg.png")}
-        >
-          {dimensions.window.height < 400 ? (
-            <ScrollView>
-              <RegisrationScreen />
-              {/* <LoginScreen /> */}
-            </ScrollView>
-          ) : (
-            <RegisrationScreen />
-            // <LoginScreen />
-          )}
-        </ImageBackground>
-      </TouchableWithoutFeedback>
-    </View>
+    <NavigationContainer>
+      <MainStack.Navigator>
+        <MainStack.Screen
+          name="Registration"
+          component={RegisrationScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+      </MainStack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  image: {
-    flex: 1,
-    resizeMode: "cover",
-    justifyContent: "flex-end",
-  },
-});
