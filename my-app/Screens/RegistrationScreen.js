@@ -55,7 +55,7 @@ export default function RegisrationScreen() {
         >
           <View style={styles.photoWrap}></View>
           <Text style={styles.formTitle}>Реєстрація</Text>
-          <View style={{ gap: 16, paddingBottom: isShowKeyboard ? 0 : 43 }}>
+          <View style={{ paddingBottom: isShowKeyboard ? 0 : 43 }}>
             <TextInput
               style={{
                 ...styles.input,
@@ -113,6 +113,7 @@ export default function RegisrationScreen() {
                 style={{
                   ...styles.input,
                   borderColor: active.password ? "#FF6C00" : "#E8E8E8",
+                  marginBottom: 0,
                 }}
                 value={state.password}
                 placeholder={"Пароль"}
@@ -197,6 +198,7 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-400",
     backgroundColor: "#F6F6F6",
     padding: 16,
+    marginBottom: 16,
     borderColor: "#E8E8E8",
     borderStyle: "solid",
     borderRadius: 8,
