@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { useState } from "react";
 import {
   StyleSheet,
@@ -13,8 +13,6 @@ import {
   // ScrollView,
   ImageBackground,
 } from "react-native";
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
 
 const initialState = {
   login: "",
@@ -24,7 +22,7 @@ const initialState = {
 // const windowDimensions = Dimensions.get("window");
 // const screenDimensions = Dimensions.get("screen");
 
-export default function LoginScreen({ navigation }) {
+export default function RegisrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [showPass, setShowPass] = useState(false);
@@ -53,26 +51,13 @@ export default function LoginScreen({ navigation }) {
   //   );
   //   return () => subscription?.remove();
   // });
-  const [fontsLoaded] = useFonts({
-    "Roboto-400": require("../assets/fonts/Roboto-Regular.ttf"),
-    "Roboto-500": require("../assets/fonts/Roboto-Medium.ttf"),
-  });
 
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
   return (
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <ImageBackground
           style={styles.image}
-          source={require("../assets/bg-3x.png")}
+          source={require("../../assets/bg-3x.png")}
         >
           {/* {dimensions.window.height < 400 ? (
             <ScrollView> */}
@@ -82,11 +67,39 @@ export default function LoginScreen({ navigation }) {
                 ...styles.form,
                 paddingBottom: isShowKeyboard ? 32 : 78,
               }}
-              onLayout={onLayoutRootView}
             >
               <View style={styles.photoWrap}></View>
-              <Text style={styles.formTitle}>Ввійти</Text>
+              <Text style={styles.formTitle}>Реєстрація</Text>
               <View style={{ paddingBottom: isShowKeyboard ? 0 : 43 }}>
+                <TextInput
+                  style={{
+                    ...styles.input,
+                    borderColor: active.login ? "#FF6C00" : "#E8E8E8",
+                  }}
+                  value={state.login}
+                  placeholder={"Логін"}
+                  placeholderTextColor={"#BDBDBD"}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({
+                      ...prevState,
+                      login: value,
+                    }))
+                  }
+                  onFocus={() => {
+                    setIsShowKeyboard(true);
+                    setIsActive((prevState) => ({
+                      ...prevState,
+                      login: true,
+                    }));
+                  }}
+                  onBlur={() => {
+                    setIsShowKeyboard(false);
+                    setIsActive((prevState) => ({
+                      ...prevState,
+                      login: false,
+                    }));
+                  }}
+                />
                 <TextInput
                   style={{
                     ...styles.input,
@@ -165,15 +178,15 @@ export default function LoginScreen({ navigation }) {
                     onPress={keyboardHide}
                     activeOpacity={0.7}
                   >
-                    <Text style={styles.textButton}>Ввійти</Text>
+                    <Text style={styles.textButton}>Зареєструватися</Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.textLogWrap}>
                   <Text
                     style={styles.textLog}
-                    onPress={() => navigation.navigate("Registration")}
+                    onPress={() => navigation.navigate("Login")}
                   >
-                    Немає акаунта? Зареєструватися
+                    Вже є акаунт? Ввійти
                   </Text>
                 </View>
               </View>
