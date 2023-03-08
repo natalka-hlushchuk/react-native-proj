@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 
-const Post = () => {
+const Post = ({ navigation }) => {
   return (
-    <View style={styles.container}>
+    <>
       <View
         style={{
           ...styles.photoWrap,
@@ -18,7 +18,7 @@ const Post = () => {
         <View style={styles.commentsWrap}>
           <TouchableOpacity
             style={styles.button}
-            // onPress={keyboardHide}
+            onPress={() => navigation.navigate("Comments")}
             activeOpacity={0.7}
           >
             <FontAwesome5
@@ -30,7 +30,11 @@ const Post = () => {
           </TouchableOpacity>
           <Text style={styles.count}>0</Text>
         </View>
-        <View style={styles.geoWrap}>
+        <TouchableOpacity
+          style={styles.geoWrap}
+          onPress={() => navigation.navigate("Map")}
+          activeOpacity={0.7}
+        >
           <Ionicons
             name="location-outline"
             size={24}
@@ -38,16 +42,13 @@ const Post = () => {
             style={styles.icon}
           />
           <Text style={styles.geo}>Ivano-Frankivs'k Region, Ukraine</Text>
-        </View>
+        </TouchableOpacity>
       </View>
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 32,
-  },
   photoWrap: {
     display: "flex",
     justifyContent: "center",

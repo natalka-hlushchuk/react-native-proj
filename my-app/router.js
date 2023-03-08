@@ -51,11 +51,12 @@ export const useRoute = (isAuth) => {
     >
       <MainTab.Screen
         options={{
+          headerShown: false,
           tabBarIcon: ({ focused, size, color }) => (
             <AntDesign name="appstore-o" size={24} color={color} />
           ),
         }}
-        name="Публікації"
+        name="Всі публікації"
         component={PostsScreen}
       />
       <MainTab.Screen

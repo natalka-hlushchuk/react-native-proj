@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,7 +9,10 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
 } from "react-native";
+import { Camera } from "expo-camera";
+import * as MediaLibrary from "expo-media-library";
 import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 const initialState = {
   label: "",
   place: "",
@@ -18,24 +21,56 @@ const initialState = {
 const CreatePostsScreen = () => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
+  const [hasPermission, setHasPermission] = useState(null);
+  const [cameraRef, setCameraRef] = useState(null);
+  const [photo, setPhoto] = useState(null);
   const keyboardHide = () => {
     Keyboard.dismiss();
     console.log(state);
     setState(initialState);
   };
+
+  const takePhoto = async () => {
+    try {
+      const photo = await cameraRef.takePictureAsync();
+      setPhoto(photo.uri);
+      console.log(photo);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      await MediaLibrary.requestPermissionsAsync();
+
+      setHasPermission(status === "granted");
+    })();
+  }, []);
+
+  if (hasPermission === null) {
+    return <View />;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
-        <View
+        <Camera
+          ref={setCameraRef}
           style={{
             ...styles.photoWrap,
             display: isShowKeyboard ? "none" : "flex",
           }}
         >
-          <View style={styles.userWrap}></View>
-
-          <Text style={styles.photoText}>Завантажте фото</Text>
-        </View>
+          <View style={styles.camWrap}>
+            <TouchableOpacity style={styles.camBatton} onPress={takePhoto}>
+              <FontAwesome name="camera" size={24} color="#BDBDBD" />
+            </TouchableOpacity>
+          </View>
+        </Camera>
+        <Text style={styles.photoText}>Завантажте фото</Text>
         <KeyboardAvoidingView>
           <View
             style={{
@@ -120,8 +155,24 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   photoWrap: {
+    width: "100%",
+    height: 240,
+    borderRadius: 8,
+    color: "#F6F6F6",
+    marginBottom: 8,
     marginBottom: 32,
+    justifyContent: "center",
+    alignItems: "center",
   },
+  camWrap: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 60,
+    height: 60,
+    borderRadius: 50,
+    backgroundColor: "#FFFFFF",
+  },
+  camBatton: {},
   userWrap: {
     width: "100%",
     height: 240,

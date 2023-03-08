@@ -16,13 +16,13 @@ const User = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 32,
-    paddingLeft: 16,
-    paddingRight: 16,
-    backgroundColor: "white",
-  },
+  // container: {
+  //   flex: 1,
+  //   paddingTop: 32,
+  //   paddingLeft: 16,
+  //   paddingRight: 16,
+  //   backgroundColor: "white",
+  // },
   photoWrap: {
     marginBottom: 32,
     flexDirection: "row",
