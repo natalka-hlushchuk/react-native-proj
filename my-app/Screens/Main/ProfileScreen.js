@@ -1,14 +1,11 @@
+import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { useState } from "react";
 import {
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
-  KeyboardAvoidingView,
-  Keyboard,
-  TouchableWithoutFeedback,
   ImageBackground,
 } from "react-native";
 import Post from "../../components/Post";
@@ -21,9 +18,13 @@ const ProfileScreen = ({ navigation }) => {
         source={require("../../assets/bg-3x.png")}
       >
         <View style={styles.wrap}>
+          <TouchableOpacity style={styles.logoutWrap}>
+            <MaterialIcons name="logout" size={24} color="#BDBDBD" />
+          </TouchableOpacity>
           <View style={styles.photoWrap}></View>
+
           <Text style={styles.formTitle}>Natali Romanova</Text>
-          <Post />
+          <Post navigation={navigation} />
         </View>
       </ImageBackground>
     </View>
@@ -47,6 +48,11 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     paddingLeft: 16,
     paddingBottom: 78,
+  },
+  logoutWrap: {
+    position: "absolute",
+    top: 34,
+    right: 16,
   },
   photoWrap: {
     width: 120,

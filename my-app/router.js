@@ -45,8 +45,6 @@ export const useRoute = (isAuth) => {
         tabBarActiveTintColor: "#FFFFFF",
         tabBarActiveBackgroundColor: "#FF6C00",
         tabBarItemStyle: { borderRadius: 20, width: 70, height: 40 },
-        //
-        // tabBarIconStyle: { color: "#212121CC" },
       }}
     >
       <MainTab.Screen
@@ -64,6 +62,16 @@ export const useRoute = (isAuth) => {
           tabBarIcon: ({ focused, size, color }) => (
             <Octicons name="plus" size={24} color={color} />
           ),
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            fontSize: 17,
+            fontFamily: "Roboto-500",
+            color: "#212121",
+          },
+          headerStyle: {
+            borderBottomWidth: 0.3,
+            borderBottomColor: "#BDBDBD",
+          },
         }}
         name="Створити публікацію"
         component={CreatePostsScreen}
@@ -73,8 +81,9 @@ export const useRoute = (isAuth) => {
           tabBarIcon: ({ focused, size, color }) => (
             <Feather name="user" size={24} color={color} />
           ),
+          headerShown: false,
         }}
-        name="Profile"
+        name="Профіль користувача"
         component={ProfileScreen}
       />
     </MainTab.Navigator>

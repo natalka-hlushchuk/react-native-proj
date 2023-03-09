@@ -8,8 +8,10 @@ import {
   TextInput,
   KeyboardAvoidingView,
   TouchableOpacity,
+  ImageBackground,
 } from "react-native";
 import { Camera } from "expo-camera";
+import * as Location from "expo-location";
 import * as MediaLibrary from "expo-media-library";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
@@ -18,12 +20,13 @@ const initialState = {
   place: "",
 };
 
-const CreatePostsScreen = () => {
+const CreatePostsScreen = ({ navigation }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [photo, setPhoto] = useState(null);
+  const [location, setLocation] = useState(null);
   const keyboardHide = () => {
     Keyboard.dismiss();
     console.log(state);
@@ -46,6 +49,20 @@ const CreatePostsScreen = () => {
 
       setHasPermission(status === "granted");
     })();
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      const coords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      console.log(coords);
+      setLocation(coords);
+    })();
   }, []);
 
   if (hasPermission === null) {
@@ -54,23 +71,61 @@ const CreatePostsScreen = () => {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
+  const resetPhoto = () => {
+    setPhoto(null);
+    setLocation(null);
+  };
+
+  const sendPost = () => {
+    if (!photo) return;
+    console.log(navigation);
+    console.log(photo);
+    navigation.navigate("Всі публікації");
+    resetPhoto();
+    setState(initialState);
+  };
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
-        <Camera
-          ref={setCameraRef}
+        {!photo ? (
+          <Camera
+            ref={setCameraRef}
+            style={{
+              ...styles.photoWrap,
+              display: isShowKeyboard ? "none" : "flex",
+            }}
+          >
+            <View style={styles.camWrap}>
+              <TouchableOpacity style={styles.camBatton} onPress={takePhoto}>
+                <FontAwesome name="camera" size={24} color="#BDBDBD" />
+              </TouchableOpacity>
+            </View>
+          </Camera>
+        ) : (
+          <View>
+            <ImageBackground
+              source={{ uri: photo }}
+              style={{
+                ...styles.photoWrap,
+                display: isShowKeyboard ? "none" : "flex",
+              }}
+            >
+              <TouchableOpacity style={styles.camBatton} onPress={resetPhoto}>
+                <FontAwesome name="camera" size={24} color="white" />
+              </TouchableOpacity>
+            </ImageBackground>
+          </View>
+        )}
+
+        <Text
           style={{
-            ...styles.photoWrap,
+            ...styles.photoText,
             display: isShowKeyboard ? "none" : "flex",
           }}
         >
-          <View style={styles.camWrap}>
-            <TouchableOpacity style={styles.camBatton} onPress={takePhoto}>
-              <FontAwesome name="camera" size={24} color="#BDBDBD" />
-            </TouchableOpacity>
-          </View>
-        </Camera>
-        <Text style={styles.photoText}>Завантажте фото</Text>
+          {!photo ? "Завантажте фото" : "Редагуйте фото"}
+        </Text>
         <KeyboardAvoidingView>
           <View
             style={{
@@ -82,6 +137,7 @@ const CreatePostsScreen = () => {
               <TextInput
                 style={{
                   ...styles.input,
+                  fontFamily: "Roboto-500",
                 }}
                 value={state.label}
                 placeholder={"Назва"}
@@ -132,11 +188,21 @@ const CreatePostsScreen = () => {
             </View>
             <View>
               <TouchableOpacity
-                style={styles.button}
-                onPress={keyboardHide}
+                style={{
+                  ...styles.button,
+                  backgroundColor: photo ? "#FF6C00" : "#F6F6F6",
+                }}
+                onPress={sendPost}
                 activeOpacity={0.7}
               >
-                <Text style={styles.textButton}>Опублікувати</Text>
+                <Text
+                  style={{
+                    ...styles.textButton,
+                    color: photo ? "#FFFFFF" : "#BDBDBD",
+                  }}
+                >
+                  Опублікувати
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -160,7 +226,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     color: "#F6F6F6",
     marginBottom: 8,
-    marginBottom: 32,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -172,7 +237,14 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: "#FFFFFF",
   },
-  camBatton: {},
+  camBatton: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 60,
+    height: 60,
+    borderRadius: 50,
+    backgroundColor: " rgba(255, 255, 255, 0.3);",
+  },
   userWrap: {
     width: "100%",
     height: 240,
@@ -187,11 +259,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#BDBDBD",
   },
-  form: {
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-  },
+  // form: {
+  //   backgroundColor: "#FFFFFF",
+  //   // borderTopLeftRadius: 25,
+  //   // borderTopRightRadius: 25,
+  // },
   inputWrap: {
     flex: 1,
     alignItems: "center",
@@ -210,16 +282,6 @@ const styles = StyleSheet.create({
     top: 10,
   },
   inputWrap: {},
-  show: {
-    position: "absolute",
-    right: 16,
-    top: 13,
-    fontFamily: "Roboto-400",
-    fontWeight: "400",
-    fontSize: 16,
-    textAlign: "right",
-    color: "#1B4371",
-  },
   button: {
     alignItems: "center",
     paddingTop: 16,

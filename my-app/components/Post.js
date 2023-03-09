@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 
 const Post = ({ navigation }) => {
+  // const [posts, setPosts] = useState([]);
+  // console.log("route.params", route);
+
+  // useEffect(() => {
+  //   if (route.params) {
+  //     setPosts((prevState) => [...prevState, route.params]);
+  //   }
+  // }, [route.params]);
+  // console.log("posts", posts);
   return (
     <>
       <View
@@ -18,7 +27,7 @@ const Post = ({ navigation }) => {
         <View style={styles.commentsWrap}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("Comments")}
+            onPress={() => navigation.navigate("Коментарі")}
             activeOpacity={0.7}
           >
             <FontAwesome5
@@ -32,7 +41,7 @@ const Post = ({ navigation }) => {
         </View>
         <TouchableOpacity
           style={styles.geoWrap}
-          onPress={() => navigation.navigate("Map")}
+          onPress={() => navigation.navigate("Мапа")}
           activeOpacity={0.7}
         >
           <Ionicons
