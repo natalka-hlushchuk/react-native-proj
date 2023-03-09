@@ -1,17 +1,13 @@
 import { NavigationContainer } from "@react-navigation/native";
-// import { createStackNavigator } from "@react-navigation/stack";
 import * as Font from "expo-font";
 import { useEffect, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import { useRoute } from "./router.js";
-// import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-// import PostsScreen from "./Screens/Main/PostsScreen";
-// import CreatePostsScreen from "./Screens/Main/CreatePostsScreen";
-// import ProfileScreen from "./Screens/Main/ProfileScreen";
-
+import { Provider } from "react-redux";
+import { store } from "./redux/store.js";
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const routing = useRoute(true);
+  const routing = useRoute(false);
   useEffect(() => {
     async function loadFonts() {
       try {
@@ -34,5 +30,9 @@ export default function App() {
     return null;
   }
 
-  return <NavigationContainer>{routing}</NavigationContainer>;
+  return (
+    <Provider store={store}>
+      <NavigationContainer>{routing}</NavigationContainer>
+    </Provider>
+  );
 }
