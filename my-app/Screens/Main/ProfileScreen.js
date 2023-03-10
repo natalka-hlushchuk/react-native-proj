@@ -1,6 +1,6 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
-import { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   StyleSheet,
   Text,
@@ -9,8 +9,14 @@ import {
   ImageBackground,
 } from "react-native";
 import Post from "../../components/Post";
+import { authSignOutUser } from "../../redux/auth/authOperations";
 
 const ProfileScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+
+  const signOut = () => {
+    dispatch(authSignOutUser());
+  };
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -18,7 +24,7 @@ const ProfileScreen = ({ navigation }) => {
         source={require("../../assets/bg-3x.png")}
       >
         <View style={styles.wrap}>
-          <TouchableOpacity style={styles.logoutWrap}>
+          <TouchableOpacity style={styles.logoutWrap} onPress={signOut}>
             <MaterialIcons name="logout" size={24} color="#BDBDBD" />
           </TouchableOpacity>
           <View style={styles.photoWrap}></View>

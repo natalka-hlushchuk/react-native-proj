@@ -9,18 +9,15 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
-  // Dimensions,
-  // ScrollView,
   ImageBackground,
 } from "react-native";
+import { useDispatch } from "react-redux";
+import { authSignInUser } from "../../redux/auth/authOperations";
 
 const initialState = {
-  login: "",
   email: "",
   password: "",
 };
-// const windowDimensions = Dimensions.get("window");
-// const screenDimensions = Dimensions.get("screen");
 
 export default function LoginScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
@@ -30,26 +27,14 @@ export default function LoginScreen({ navigation }) {
     email: false,
     password: false,
   });
+  const dispatch = useDispatch();
 
-  // const [dimensions, setDimensions] = useState({
-  //   window: windowDimensions,
-  //   screen: screenDimensions,
-  // });
-
-  const keyboardHide = () => {
+  const handelSubmit = () => {
     Keyboard.dismiss();
     console.log(state);
+    dispatch(authSignInUser(state));
     setState(initialState);
   };
-  // useEffect(() => {
-  //   const subscription = Dimensions.addEventListener(
-  //     "change",
-  //     ({ window, screen }) => {
-  //       setDimensions({ window, screen });
-  //     }
-  //   );
-  //   return () => subscription?.remove();
-  // });
 
   return (
     <View style={styles.container}>
@@ -58,8 +43,6 @@ export default function LoginScreen({ navigation }) {
           style={styles.image}
           source={require("../../assets/bg-3x.png")}
         >
-          {/* {dimensions.window.height < 400 ? (
-            <ScrollView> */}
           <KeyboardAvoidingView>
             <View
               style={{
@@ -145,7 +128,7 @@ export default function LoginScreen({ navigation }) {
                 <View style={{ paddingBottom: 16 }}>
                   <TouchableOpacity
                     style={styles.button}
-                    onPress={keyboardHide}
+                    onPress={handelSubmit}
                     activeOpacity={0.7}
                   >
                     <Text style={styles.textButton}>Ввійти</Text>

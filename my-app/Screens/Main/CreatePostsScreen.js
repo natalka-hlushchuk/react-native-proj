@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   View,
   Text,
@@ -15,6 +16,8 @@ import * as Location from "expo-location";
 import * as MediaLibrary from "expo-media-library";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc, getFirestore } from "firebase/firestore";
 const initialState = {
   label: "",
   place: "",
@@ -27,6 +30,10 @@ const CreatePostsScreen = ({ navigation }) => {
   const [cameraRef, setCameraRef] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState(null);
+  const [place, setPlace] = useState(null);
+  const [coords, setCoords] = useState(null);
+  const { userId, nickname } = useSelector((state) => state.auth);
+
   const keyboardHide = () => {
     Keyboard.dismiss();
     console.log(state);
@@ -60,8 +67,7 @@ const CreatePostsScreen = ({ navigation }) => {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
       };
-      console.log(coords);
-      setLocation(coords);
+      setCoords(coords);
     })();
   }, []);
 
@@ -72,17 +78,56 @@ const CreatePostsScreen = ({ navigation }) => {
     return <Text>No access to camera</Text>;
   }
   const resetPhoto = () => {
-    setPhoto(null);
-    setLocation(null);
+    setPhoto("");
+    setLocation("");
+    setPlace("");
   };
 
+  const uploadPhotoToServer = async () => {
+    try {
+      const response = await fetch(photo);
+      const file = await response.blob();
+      const uniquePostId = Date.now().toString();
+      const storage = getStorage();
+      const pathReference = await ref(storage, `postImage/${uniquePostId}`);
+      await uploadBytes(pathReference, file).then((photo) =>
+        console.log("Uploaded a blob photo", photo)
+      );
+      const downloadedPhoto = await getDownloadURL(pathReference)
+        .then((data) => data)
+        .catch((error) => {
+          console.log(error);
+        });
+      console.log("downloadedPhoto:", downloadedPhoto);
+      return downloadedPhoto;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const uploadPost = async () => {
+    const db = getFirestore();
+    try {
+      const photo = await uploadPhotoToServer();
+      if (!photo) return;
+      await addDoc(collection(db, "posts"), {
+        userId,
+        nickname,
+        photo,
+        place,
+        location,
+        coords: coords,
+        date: Date.now().toString(),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const sendPost = () => {
     if (!photo) return;
-    console.log(navigation);
-    console.log(photo);
+    uploadPost();
     navigation.navigate("Всі публікації");
     resetPhoto();
-    setState(initialState);
   };
 
   return (
@@ -139,15 +184,10 @@ const CreatePostsScreen = ({ navigation }) => {
                   ...styles.input,
                   fontFamily: "Roboto-500",
                 }}
-                value={state.label}
+                value={place}
                 placeholder={"Назва"}
                 placeholderTextColor={"#BDBDBD"}
-                onChangeText={(value) =>
-                  setState((prevState) => ({
-                    ...prevState,
-                    label: value,
-                  }))
-                }
+                onChangeText={(text) => setPlace(text)}
                 onFocus={() => {
                   setIsShowKeyboard(true);
                 }}
@@ -163,15 +203,10 @@ const CreatePostsScreen = ({ navigation }) => {
                   marginBottom: 32,
                   paddingLeft: 28,
                 }}
-                value={state.place}
+                value={location}
                 placeholder={"Місцевість"}
                 placeholderTextColor={"#BDBDBD"}
-                onChangeText={(value) =>
-                  setState((prevState) => ({
-                    ...prevState,
-                    place: value,
-                  }))
-                }
+                onChangeText={(text) => setLocation(text)}
                 onFocus={() => {
                   setIsShowKeyboard(true);
                 }}

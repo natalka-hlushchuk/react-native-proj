@@ -1,13 +1,13 @@
-import { NavigationContainer } from "@react-navigation/native";
 import * as Font from "expo-font";
 import { useEffect, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
-import { useRoute } from "./router.js";
 import { Provider } from "react-redux";
 import { store } from "./redux/store.js";
+import { Home } from "./Screens/Main/Home.js";
+
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const routing = useRoute(false);
+
   useEffect(() => {
     async function loadFonts() {
       try {
@@ -32,7 +32,7 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <NavigationContainer>{routing}</NavigationContainer>
+      <Home />
     </Provider>
   );
 }
