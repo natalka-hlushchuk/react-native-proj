@@ -1,5 +1,8 @@
 import React from "react";
 import { useState } from "react";
+import * as ImagePicker from "expo-image-picker";
+import { uploadBytes, ref, getDownloadURL } from "firebase/storage";
+import { storage } from "../../firebase/config";
 import {
   StyleSheet,
   Text,
@@ -10,34 +13,71 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   ImageBackground,
+  Image,
 } from "react-native";
 import { authSignUpUser } from "../../redux/auth/authOperations";
 import { useDispatch } from "react-redux";
-const initialState = {
-  login: "",
-  email: "",
-  password: "",
-};
+import { AntDesign } from "@expo/vector-icons";
 
 export default function RegisrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [state, setState] = useState(initialState);
-  const [showPass, setShowPass] = useState(false);
-  const [active, setIsActive] = useState({
+  const [avatar, setAvatar] = useState(null);
+  const [showPass, setShowPass] = useState(true);
+  const [login, setLogin] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isActive, setIsActive] = useState({
     email: false,
     login: false,
     password: false,
   });
 
   const dispatch = useDispatch();
-
-  const handelSubmit = () => {
-    Keyboard.dismiss();
-    console.log(state);
-    dispatch(authSignUpUser(state));
-    setState(initialState);
+  const handleSetLogin = (text) => setLogin(text);
+  const handleSetEmail = (text) => setEmail(text);
+  const handleSetPassword = (text) => setPassword(text);
+  const formReset = () => {
+    setLogin("");
+    setAvatar(null);
+    setEmail("");
+    setPassword("");
   };
 
+  const uploadPhoto = async () => {
+    try {
+      const response = await fetch(avatar);
+      const file = await response.blob();
+      await uploadBytes(ref(storage, `avatars/${file._data.blobId}`), file);
+      const photoUrl = await getDownloadURL(
+        ref(storage, `avatars/${file._data.blobId}`)
+      );
+      return photoUrl;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleSubmit = async () => {
+    Keyboard.dismiss();
+    if (email === "" || password === "" || login === "")
+      return console.log("Неможливо зареєструватися");
+
+    const avatar = await uploadPhoto();
+    dispatch(authSignUpUser({ email, password, login, avatar }));
+    formReset();
+  };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      setAvatar(result.assets[0].uri);
+    }
+  };
   return (
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -52,23 +92,42 @@ export default function RegisrationScreen({ navigation }) {
                 paddingBottom: isShowKeyboard ? 32 : 78,
               }}
             >
-              <View style={styles.photoWrap}></View>
+              <View style={styles.photoWrap}>
+                <Image source={{ uri: avatar }} style={styles.avatarImg} />
+                {avatar ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setAvatar(null);
+                    }}
+                  >
+                    <View style={styles.removeAvatarIcon}>
+                      <AntDesign
+                        name="closecircleo"
+                        size={25}
+                        color="#E8E8E8"
+                      />
+                    </View>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity onPress={pickImage}>
+                    <View style={styles.addAvatarIcon}>
+                      <AntDesign name="pluscircleo" size={25} color="#FF6C00" />
+                    </View>
+                  </TouchableOpacity>
+                )}
+              </View>
               <Text style={styles.formTitle}>Реєстрація</Text>
               <View style={{ paddingBottom: isShowKeyboard ? 0 : 43 }}>
                 <TextInput
                   style={{
                     ...styles.input,
-                    borderColor: active.login ? "#FF6C00" : "#E8E8E8",
+                    borderColor: isActive.login ? "#FF6C00" : "#E8E8E8",
+                    backgroundColor: isActive.login ? "#FFFFFF" : "#F6F6F6",
                   }}
-                  value={state.login}
+                  value={login}
                   placeholder={"Логін"}
                   placeholderTextColor={"#BDBDBD"}
-                  onChangeText={(value) =>
-                    setState((prevState) => ({
-                      ...prevState,
-                      login: value,
-                    }))
-                  }
+                  onChangeText={handleSetLogin}
                   onFocus={() => {
                     setIsShowKeyboard(true);
                     setIsActive((prevState) => ({
@@ -87,17 +146,13 @@ export default function RegisrationScreen({ navigation }) {
                 <TextInput
                   style={{
                     ...styles.input,
-                    borderColor: active.email ? "#FF6C00" : "#E8E8E8",
+                    borderColor: isActive.email ? "#FF6C00" : "#E8E8E8",
+                    backgroundColor: isActive.email ? "#FFFFFF" : "#F6F6F6",
                   }}
-                  value={state.email}
+                  value={email}
                   placeholder={"Адреса електронної пошти"}
                   placeholderTextColor={"#BDBDBD"}
-                  onChangeText={(value) =>
-                    setState((prevState) => ({
-                      ...prevState,
-                      email: value,
-                    }))
-                  }
+                  onChangeText={handleSetEmail}
                   onFocus={() => {
                     setIsShowKeyboard(true);
                     setIsActive((prevState) => ({
@@ -117,10 +172,13 @@ export default function RegisrationScreen({ navigation }) {
                   <TextInput
                     style={{
                       ...styles.input,
-                      borderColor: active.password ? "#FF6C00" : "#E8E8E8",
+                      borderColor: isActive.password ? "#FF6C00" : "#E8E8E8",
+                      backgroundColor: isActive.password
+                        ? "#FFFFFF"
+                        : "#F6F6F6",
                       marginBottom: 0,
                     }}
-                    value={state.password}
+                    value={password}
                     placeholder={"Пароль"}
                     placeholderTextColor={"#BDBDBD"}
                     onFocus={() => {
@@ -137,12 +195,7 @@ export default function RegisrationScreen({ navigation }) {
                         password: false,
                       }));
                     }}
-                    onChangeText={(value) =>
-                      setState((prevState) => ({
-                        ...prevState,
-                        password: value,
-                      }))
-                    }
+                    onChangeText={handleSetPassword}
                     secureTextEntry={showPass}
                   />
                   <Text
@@ -159,7 +212,7 @@ export default function RegisrationScreen({ navigation }) {
                 <View style={{ paddingBottom: 16 }}>
                   <TouchableOpacity
                     style={styles.button}
-                    onPress={handelSubmit}
+                    onPress={handleSubmit}
                     activeOpacity={0.7}
                   >
                     <Text style={styles.textButton}>Зареєструватися</Text>
@@ -201,14 +254,30 @@ const styles = StyleSheet.create({
     paddingBottom: 78,
   },
   photoWrap: {
-    // width: 120,
-    // height: 120,
-    // backgroundColor: "#F6F6F6",
-    // borderRadius: 16,
-    // // position: "absolute",
-    // justifyContent: "center",
+    backgroundColor: "#F6F6F6",
+    borderRadius: 16,
+    position: "absolute",
+    justifyContent: "center",
+    top: -60,
+    left: 122,
   },
-  // titleWrap: {  },
+  avatarImg: {
+    width: 120,
+    height: 120,
+    borderRadius: 16,
+  },
+  addAvatarIcon: {
+    position: "absolute",
+    right: -13,
+    bottom: 14,
+  },
+  removeAvatarIcon: {
+    position: "absolute",
+    right: -13,
+    bottom: 14,
+    backgroundColor: "#fff",
+    borderRadius: 50,
+  },
   formTitle: {
     paddingBottom: 32,
     fontSize: 30,

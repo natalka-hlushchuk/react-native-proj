@@ -1,27 +1,26 @@
 import { useSelector } from "react-redux";
 import { Image, StyleSheet, Text, View } from "react-native";
 
-const Comment = ({ avatar, comment, date }) => {
+const Comment = ({ avatar, comment, nickname }) => {
+  const username = useSelector((state) => {
+    state.auth.nickname;
+  });
   return (
     <View style={styles.container}>
       <View
         style={{
           marginBottom: 24,
+          flexDirection: "row",
         }}
       >
         <Image source={{ uri: avatar }} style={styles.avatar} />
-        <View
-          style={username === nickname ? styles.userComment : styles.comment}
-        >
+        <View style={styles.comment}>
           <Text style={styles.text}>{comment}</Text>
           <Text
             style={{
               ...styles.date,
-              textAlign: username === nickname ? "left" : "right",
             }}
-          >
-            {date}
-          </Text>
+          ></Text>
         </View>
       </View>
     </View>
@@ -36,27 +35,26 @@ const styles = StyleSheet.create({
     height: 28,
     width: 28,
     borderRadius: 50,
+    backgroundColor: "#BDBDBD",
   },
   comment: {
     flex: 1,
     marginLeft: 16,
-
     padding: 16,
     backgroundColor: "rgba(0, 0, 0, 0.03)",
     borderBottomLeftRadius: 6,
     borderBottomRightRadius: 6,
     borderTopRightRadius: 6,
   },
-  userComment: {
-    marginRight: 16,
-    flex: 1,
-
-    padding: 16,
-    backgroundColor: "rgba(0, 0, 0, 0.03)",
-    borderBottomLeftRadius: 6,
-    borderBottomRightRadius: 6,
-    borderTopLeftRadius: 6,
-  },
+  //   userComment: {
+  //     marginRight: 16,
+  //     flex: 1,
+  //     padding: 16,
+  //     backgroundColor: "rgba(0, 0, 0, 0.03)",
+  //     borderBottomLeftRadius: 6,
+  //     borderBottomRightRadius: 6,
+  //     borderTopLeftRadius: 6,
+  //   },
   text: {
     fontFamily: "Roboto-400",
     fontSize: 13,

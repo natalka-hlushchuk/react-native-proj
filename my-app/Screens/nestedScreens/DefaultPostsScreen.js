@@ -9,8 +9,8 @@ const DefaultPostsScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    const q = query(collection(db, "posts"), orderBy("date", "desc"));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const item = query(collection(db, "posts"), orderBy("date", "desc"));
+    const unsubscribe = onSnapshot(item, (querySnapshot) => {
       const allPosts = [];
       querySnapshot.forEach((doc) => {
         allPosts.push({ ...doc.data(), id: doc.id });
@@ -31,7 +31,7 @@ const DefaultPostsScreen = ({ navigation }) => {
             <Post
               navigation={navigation}
               photo={item.photo}
-              title={item.title}
+              title={item.place}
               location={item.location}
               coords={item.coords}
               postId={item.id}

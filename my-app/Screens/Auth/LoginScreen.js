@@ -22,7 +22,7 @@ const initialState = {
 export default function LoginScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
-  const [showPass, setShowPass] = useState(false);
+  const [showPass, setShowPass] = useState(true);
   const [active, setIsActive] = useState({
     email: false,
     password: false,
@@ -31,7 +31,6 @@ export default function LoginScreen({ navigation }) {
 
   const handelSubmit = () => {
     Keyboard.dismiss();
-    console.log(state);
     dispatch(authSignInUser(state));
     setState(initialState);
   };
@@ -169,15 +168,6 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     paddingBottom: 78,
   },
-  photoWrap: {
-    // width: 120,
-    // height: 120,
-    // backgroundColor: "#F6F6F6",
-    // borderRadius: 16,
-    // // position: "absolute",
-    // justifyContent: "center",
-  },
-  // titleWrap: {  },
   formTitle: {
     paddingBottom: 32,
     fontSize: 30,

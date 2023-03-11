@@ -1,13 +1,16 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { useSelector } from "react-redux";
 
 const User = () => {
   const { nickname, email, avatar } = useSelector((state) => state.auth);
+
   return (
     <>
       <View style={styles.photoWrap}>
-        <View style={styles.userWrap}></View>
+        <View style={styles.userWrap}>
+          <Image source={{ uri: avatar }} style={styles.userWrap} />
+        </View>
         <View style={styles.info}>
           <Text style={styles.name}>{nickname}</Text>
           <Text style={styles.email}>{email}</Text>
@@ -18,13 +21,6 @@ const User = () => {
 };
 
 const styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  //   paddingTop: 32,
-  //   paddingLeft: 16,
-  //   paddingRight: 16,
-  //   backgroundColor: "white",
-  // },
   photoWrap: {
     marginBottom: 32,
     flexDirection: "row",

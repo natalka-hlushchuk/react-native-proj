@@ -44,7 +44,6 @@ const CreatePostsScreen = ({ navigation }) => {
     try {
       const photo = await cameraRef.takePictureAsync();
       setPhoto(photo.uri);
-      console.log(photo);
     } catch (err) {
       console.log(err);
     }
@@ -98,7 +97,6 @@ const CreatePostsScreen = ({ navigation }) => {
         .catch((error) => {
           console.log(error);
         });
-      console.log("downloadedPhoto:", downloadedPhoto);
       return downloadedPhoto;
     } catch (error) {
       console.error(error);

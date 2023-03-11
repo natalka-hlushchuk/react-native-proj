@@ -18,13 +18,13 @@ export const useRoute = (isAuth) => {
     return (
       <AuthStack.Navigator>
         <AuthStack.Screen
-          name="Registration"
-          component={RegisrationScreen}
+          name="Login"
+          component={LoginScreen}
           options={{ headerShown: false }}
         />
         <AuthStack.Screen
-          name="Login"
-          component={LoginScreen}
+          name="Registration"
+          component={RegisrationScreen}
           options={{ headerShown: false }}
         />
       </AuthStack.Navigator>
