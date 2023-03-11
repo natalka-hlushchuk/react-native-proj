@@ -1,6 +1,6 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   StyleSheet,
   Text,
@@ -8,10 +8,11 @@ import {
   View,
   ImageBackground,
 } from "react-native";
-import Post from "../../components/Post";
+import UserPost from "../../components/UserPost";
 import { authSignOutUser } from "../../redux/auth/authOperations";
 
 const ProfileScreen = ({ navigation }) => {
+  const { nickname, email, avatar } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const signOut = () => {
@@ -29,8 +30,8 @@ const ProfileScreen = ({ navigation }) => {
           </TouchableOpacity>
           <View style={styles.photoWrap}></View>
 
-          <Text style={styles.formTitle}>Natali Romanova</Text>
-          <Post navigation={navigation} />
+          <Text style={styles.formTitle}>{nickname}</Text>
+          <UserPost navigation={navigation} />
         </View>
       </ImageBackground>
     </View>

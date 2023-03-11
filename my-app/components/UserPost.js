@@ -26,7 +26,7 @@ const Post = ({
         <View style={styles.commentsWrap}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("Коментарі", { photo, postId })}
+            onPress={() => navigation.navigate("Коментарі")}
             activeOpacity={0.7}
           >
             <FontAwesome5
@@ -40,9 +40,7 @@ const Post = ({
         </View>
         <TouchableOpacity
           style={styles.geoWrap}
-          onPress={() =>
-            navigation.navigate("Мапа", { coords, title, location })
-          }
+          onPress={() => navigation.navigate("Мапа")}
           activeOpacity={0.7}
         >
           <Ionicons

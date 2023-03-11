@@ -1,14 +1,16 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useSelector } from "react-redux";
 
 const User = () => {
+  const { nickname, email, avatar } = useSelector((state) => state.auth);
   return (
     <>
       <View style={styles.photoWrap}>
         <View style={styles.userWrap}></View>
         <View style={styles.info}>
-          <Text style={styles.name}>Natali Romanova</Text>
-          <Text style={styles.email}>example@example.com</Text>
+          <Text style={styles.name}>{nickname}</Text>
+          <Text style={styles.email}>{email}</Text>
         </View>
       </View>
     </>

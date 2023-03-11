@@ -1,14 +1,46 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, FlatList, SafeAreaView } from "react-native";
 import Post from "../../components/Post";
-
+import { db } from "../../firebase/config";
+import { collection, query, onSnapshot, orderBy } from "firebase/firestore";
 import User from "../../components/User";
 
 const DefaultPostsScreen = ({ navigation }) => {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    const q = query(collection(db, "posts"), orderBy("date", "desc"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const allPosts = [];
+      querySnapshot.forEach((doc) => {
+        allPosts.push({ ...doc.data(), id: doc.id });
+      });
+      setPosts(allPosts);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
   return (
     <View style={styles.container}>
       <User />
-      <Post navigation={navigation} />
+      <SafeAreaView style={{ flex: 1 }}>
+        <FlatList
+          data={posts}
+          renderItem={({ item }) => (
+            <Post
+              navigation={navigation}
+              photo={item.photo}
+              title={item.title}
+              location={item.location}
+              coords={item.coords}
+              postId={item.id}
+              likes={item.like}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+        />
+      </SafeAreaView>
     </View>
   );
 };
